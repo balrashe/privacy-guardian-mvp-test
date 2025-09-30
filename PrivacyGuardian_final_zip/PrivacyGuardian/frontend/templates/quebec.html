@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+
+{#
+  Quebec Law 25 Pack
+
+  This page helps organisations generate a bilingual privacy policy and
+  officer contact block tailored to Quebec’s Law 25, along with a
+  blank EFVP/PIA worksheet.  Users provide basic organisation details
+  (company name, contact email, officer name and phone), select their
+  business type and template style, and optionally include an AI
+  section.  Upon submission the generated English and French
+  policies, officer block and worksheet are displayed.  Users may
+  download the worksheet as an Excel file or the policies as text.
+#}
+
+{% block content %}
+  {% set page_title = 'Quebec Law 25 Pack' %}
+  <h2>Quebec Law 25 Pack</h2>
+  <p>
+    Generate a bilingual privacy policy aligned with Quebec’s privacy law (Law 25),
+    a privacy officer contact block and download a blank EFVP/PIA worksheet.  Fill
+    out the form below to create a customised pack for your organisation.
+  </p>
+  <div class="card">
+    <h3>Create Pack</h3>
+    <form method="post">
+      <div class="form-grid">
+        <div>
+          <div class="form-group">
+            <label for="company_name">Company Name</label>
+            <input type="text" id="company_name" name="company_name" value="{{ company_name }}" required />
+          </div>
+          <div class="form-group">
+            <label for="contact_email">Privacy Contact Email</label>
+            <input type="email" id="contact_email" name="contact_email" value="{{ contact_email }}" required />
+          </div>
+          <div class="form-group">
+            <label for="officer_name">Privacy Officer Name</label>
+            <input type="text" id="officer_name" name="officer_name" value="{{ officer_name }}" required />
+          </div>
+          <div class="form-group">
+            <label for="officer_phone">Officer Phone (optional)</label>
+            <input type="text" id="officer_phone" name="officer_phone" value="{{ officer_phone }}" />
+          </div>
+        </div>
+        <div>
+          <div class="form-group">
+            <label for="business_type">Business Type</label>
+            <select id="business_type" name="business_type">
+              {% for key, label in business_types.items() %}
+                <option value="{{ key }}" {% if business_type == key %}selected{% endif %}>{{ label }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="template_style">Template Style</label>
+            <select id="template_style" name="template_style">
+              {% for style in template_styles %}
+                <option value="{{ style }}" {% if template_style == style %}selected{% endif %}>{{ style }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="form-group">
+            <label><input type="checkbox" name="include_ai" {% if include_ai %}checked{% endif %}/> Include Automated Decision‑Making section</label>
+          </div>
+        </div>
+      </div>
+      <button type="submit" class="btn">Generate Pack</button>
+    </form>
+    {% if error %}
+      <div class="alert alert-error" style="margin-top: 1rem;"><strong>Error:</strong> {{ error }}</div>
+    {% endif %}
+  </div>
+  {% if policies %}
+    <div class="card">
+      <h3>Privacy Policy (English)</h3>
+      <pre style="white-space: pre-wrap; overflow-x: auto; background-color: var(--color-bg); padding: 1rem; border-radius: 6px; border: 1px solid var(--color-border);">{{ policies['english'] }}</pre>
+      <h3 style="margin-top: 1rem;">Privacy Policy (French)</h3>
+      <pre style="white-space: pre-wrap; overflow-x: auto; background-color: var(--color-bg); padding: 1rem; border-radius: 6px; border: 1px solid var(--color-border);">{{ policies['french'] }}</pre>
+      <h3 style="margin-top: 1rem;">Privacy Officer Block</h3>
+      <p><strong>English:</strong><br />{{ officer_block['english'] | replace('\n', '<br />') | safe }}</p>
+      <p><strong>French:</strong><br />{{ officer_block['french'] | replace('\n', '<br />') | safe }}</p>
+      <h3 style="margin-top: 1rem;">EFVP/PIA Worksheet</h3>
+      <div class="table-container">{{ worksheet_html | safe }}</div>
+      <h4 style="margin-top: 1rem;">Downloads</h4>
+      <div class="grid-2">
+        <form method="post" action="/quebec_download_worksheet">
+          <button type="submit" class="btn" style="width: 100%;">📄 Download Worksheet (Excel)</button>
+        </form>
+        <div style="display: flex; flex-direction: column; gap: 0.5rem; width: 100%;">
+          <a class="btn btn-secondary" style="width: 100%;" href="data:text/plain;charset=utf-8,{{ policies['english'] | urlencode }}" download="privacy_policy_{{ company_name | replace(' ', '_') }}_en.txt">📋 English Policy (.txt)</a>
+          <a class="btn btn-secondary" style="width: 100%;" href="data:text/plain;charset=utf-8,{{ policies['french'] | urlencode }}" download="privacy_policy_{{ company_name | replace(' ', '_') }}_fr.txt">📋 French Policy (.txt)</a>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+{% endblock %}

@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  {% set page_title = 'Privacy Policy Generator' %}
+  <h2>Privacy Policy Generator</h2>
+  <p>Generate a customised privacy policy aligned with Canadian PIPEDA/CPPA/AIDA or the EU GDPR. Provide your company details and select the appropriate template style. You can optionally include a section addressing automated decision‑making (AI).</p>
+  <div class="card">
+    <form method="post">
+      <div class="form-grid">
+        <div>
+          <div class="form-group">
+            <label for="company">Company Name</label>
+            <input type="text" id="company" name="company" value="{{ company if company is defined else 'Example Co.' }}" required />
+          </div>
+          <div class="form-group">
+            <label for="contact_email">Privacy Contact Email</label>
+            <input type="email" id="contact_email" name="contact_email" value="{{ contact_email if contact_email is defined else 'privacy@example.com' }}" required />
+          </div>
+          <div class="form-group">
+            <label for="jurisdiction">Jurisdiction</label>
+            <select id="jurisdiction" name="jurisdiction">
+              <option value="Canada" {% if jurisdiction=='Canada' %}selected{% endif %}>Canada (PIPEDA/CPPA/AIDA)</option>
+              <option value="EU" {% if jurisdiction=='EU' %}selected{% endif %}>European Union (GDPR)</option>
+            </select>
+          </div>
+        </div>
+        <div>
+          <div class="form-group">
+            <label for="business_type">Business Type</label>
+            <select id="business_type" name="business_type">
+              {% for key, name in business_types.items() %}
+                <option value="{{ key }}" {% if business_type==key %}selected{% endif %}>{{ name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="template_style">Template Style</label>
+            <select id="template_style" name="template_style">
+              {% for style in template_styles %}
+                <option value="{{ style }}" {% if template_style==style %}selected{% endif %}>{{ style|title }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="form-group" style="margin-top: 1rem;">
+            <label><input type="checkbox" name="include_ai" {% if include_ai %}checked{% endif %}/> Include Automated Decision‑Making (AI) section</label>
+          </div>
+        </div>
+      </div>
+      <button type="submit" class="btn">Generate Policy</button>
+    </form>
+  </div>
+  {% if policy %}
+    <div class="card">
+      <h3>Generated Policy</h3>
+      <pre style="white-space: pre-wrap; overflow-x: auto; background-color: var(--color-bg); padding: 1rem; border-radius: 6px; border: 1px solid var(--color-border);">
+{{ policy }}
+      </pre>
+      <a class="btn" download="{{ file_name }}" href="data:text/plain;charset=utf-8,{{ policy | urlencode }}">Download .txt</a>
+    </div>
+  {% endif %}
+{% endblock %}

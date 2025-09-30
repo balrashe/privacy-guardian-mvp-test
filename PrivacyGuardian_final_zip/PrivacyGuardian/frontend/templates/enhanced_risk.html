@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{#
+  Enhanced Risk Scoring Page
+
+  This template renders a form for uploading a CSV (or using the provided sample)
+  and computes a detailed numeric risk score using Luhn and SIN checks.  The
+  resulting table of classifications, overall score and percentage, and
+  actionable recommendations are displayed in cards below the form.  All
+  interactive elements follow the same visual style defined in
+  static/css/style.css.  On small screens the layout collapses gracefully.
+#}
+
+{% block content %}
+  {% set page_title = 'Enhanced Risk Scoring' %}
+  <h2>Enhanced Risk Scoring</h2>
+  <p>
+    Upload a CSV file (or analyse our sample) to calculate a numeric risk score
+    for your dataset.  This module extends the basic risk assessment with
+    Luhn credit‑card and Social Insurance Number (SIN) checks to provide
+    deeper insight and recommendations.
+  </p>
+  <div class="card">
+    <form method="post" enctype="multipart/form-data">
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="csv_file">Upload CSV</label>
+          <input type="file" id="csv_file" name="csv_file" accept=".csv" />
+        </div>
+        <div class="form-group">
+          <label><input type="checkbox" name="use_sample" {% if request.form.get('use_sample') %}checked{% endif %}/> Use sample dataset</label>
+        </div>
+      </div>
+      <button type="submit" class="btn">Compute Score</button>
+    </form>
+    {% if error %}
+      <div class="alert alert-error">
+        <strong>Error:</strong> {{ error }}
+        {% if validation_messages %}
+          <pre style="white-space: pre-wrap; margin-top: 0.5rem;">{{ validation_messages }}</pre>
+        {% endif %}
+      </div>
+    {% endif %}
+  </div>
+  {% if table_html %}
+    <div class="card">
+      <h3>Column Classification</h3>
+      <div class="table-container">
+        {{ table_html | safe }}
+      </div>
+      <h3 style="margin-top: 1.25rem;">Dataset Risk Score</h3>
+      <div class="grid-2">
+        <div>
+          <p><strong>Score:</strong> {{ score }}/{{ max_score }}</p>
+          <p><strong>Percentage:</strong> {{ '%.1f'|format(pct) }}%</p>
+        </div>
+      </div>
+      {% if recommendations %}
+        <h4 style="margin-top: 1rem;">Recommendations</h4>
+        <ul>
+          {% for rec in recommendations %}
+            <li>{{ rec }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    </div>
+  {% endif %}
+{% endblock %}

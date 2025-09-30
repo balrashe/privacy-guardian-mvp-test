@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{#
+  DSAR Dossier Factory
+
+  This template allows users to generate a Data Subject Access Request
+  (DSAR) dossier.  Users provide the data subject’s name and the
+  organisation’s contact email, then upload a CSV of the subject’s data
+  (or use the sample).  The resulting summary categorises columns by
+  sensitivity and generates a letter.  Users can export a PDF dossier
+  containing the classification results and letter.
+#}
+
+{% block content %}
+  {% set page_title = 'DSAR Dossier Factory' %}
+  <h2>DSAR Dossier Factory</h2>
+  <p>
+    Generate a Data Subject Access Request (DSAR) dossier summarising the
+    personal data you hold about an individual.  Provide the subject’s
+    name, your contact details and upload a dataset containing their
+    records.
+  </p>
+  <div class="card">
+    <form method="post" enctype="multipart/form-data">
+      <div class="form-grid">
+        <div>
+          <div class="form-group">
+            <label for="subject_name">Data subject name</label>
+            <input type="text" id="subject_name" name="subject_name" value="{{ subject_name }}" required />
+          </div>
+          <div class="form-group">
+            <label for="contact_email">Your organisation's contact email</label>
+            <input type="email" id="contact_email" name="contact_email" value="{{ contact_email }}" required />
+          </div>
+          <div class="form-group">
+            <label><input type="checkbox" name="use_sample" {% if request.form.get('use_sample') %}checked{% endif %}/> Use sample dataset</label>
+          </div>
+        </div>
+        <div>
+          <div class="form-group">
+            <label for="csv_file">Upload CSV</label>
+            <input type="file" id="csv_file" name="csv_file" accept=".csv" />
+          </div>
+        </div>
+      </div>
+      <button type="submit" class="btn">Generate DSAR Dossier</button>
+    </form>
+    {% if error %}
+      <div class="alert alert-error">
+        <strong>Error:</strong> {{ error }}
+        {% if validation_messages %}
+          <pre style="white-space: pre-wrap; margin-top: 0.5rem;">{{ validation_messages }}</pre>
+        {% endif %}
+      </div>
+    {% endif %}
+  </div>
+  {% if summary %}
+    <div class="card">
+      <h3>Summary of Data Held</h3>
+      {% for level in ['High', 'Medium', 'Low'] %}
+        {% set cols = summary.categories.get(level, []) %}
+        {% if cols %}
+          <p><strong>{{ level }} sensitivity:</strong> {{ cols | join(', ') }}</p>
+        {% endif %}
+      {% endfor %}
+      <h4 style="margin-top: 1rem;">DSAR Response Letter</h4>
+      <pre style="white-space: pre-wrap; overflow-x: auto; background-color: var(--color-bg); padding: 1rem; border-radius: 6px; border: 1px solid var(--color-border);">{{ letter }}</pre>
+      <h4 style="margin-top: 1rem;">Classification Results</h4>
+      <div class="table-container">{{ table_html | safe }}</div>
+      <h4 style="margin-top: 1rem;">Export Dossier</h4>
+      <div class="grid-2">
+        <form method="post" action="/dsar_export_pdf">
+          <input type="hidden" name="summary_data" value="{{ summary | tojson | e }}" />
+          <input type="hidden" name="letter" value="{{ letter | e }}" />
+          <button type="submit" class="btn" style="width: 100%;">📄 Export PDF</button>
+        </form>
+        <form>
+          <a class="btn btn-secondary" style="width: 100%;" href="data:text/plain;charset=utf-8,{{ letter | urlencode }}" download="dsar_letter_{{ subject_name | replace(' ', '_') }}.txt">📋 Download Letter (.txt)</a>
+        </form>
+      </div>
+    </div>
+  {% endif %}
+{% endblock %}

@@ -1,0 +1,6 @@
+customer_id,first_name,last_name,email,phone,dob,address,city,province,postal_code,ip,notes,credit_card,last_purchase_amount
+1001,Ali,Khan,ali.khan@example.com,+1 (416) 555-0199,1990-07-22,123 King St W,Toronto,ON,M5H 2N2,192.168.0.12,VIP customer,1234-5678-9012-3456,249.00
+1002,Sara,Lee,sara.lee@example.com,416-555-0123,1987-03-05,45 Queen St E,Toronto,ON,M5C 2X1,10.0.0.23,Recently upgraded card,5678-1234-9012-3456,129.99
+1003,David,Nguyen,david.nguyen@example.com,905 555 9876,1985-11-30,77 Bay St,Mississauga,ON,L5B 2C9,172.16.0.1,Prefers SMS,,79.95
+1004,Amira,Ali,amira.ali@example.com,+1-647-555-7788,1993-12-15,200 Bloor St,Ottawa,ON,K1P 1J1,203.0.113.55,Health plan member,4321-8765-2109-6543,59.00
+1005,Omar,Hassan,omar.hassan@example.com,(289) 555-0000,1999-01-09,15 College St,Hamilton,ON,L8P 1A5,198.51.100.42,Request call back,,0.00

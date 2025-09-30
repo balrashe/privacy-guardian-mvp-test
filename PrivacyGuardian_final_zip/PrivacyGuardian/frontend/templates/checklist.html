@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  {% set page_title = 'Compliance Checklist' %}
+  <h2>Compliance Checklist</h2>
+  <p>Assess your readiness against key privacy requirements. Answer each question and we'll compute a weighted score and provide actionable recommendations.</p>
+  <div class="card">
+    <form method="post">
+      {% for key, item in checklist.items() %}
+        <div class="form-group">
+          <label for="{{ key }}">{{ item.question }}</label>
+          <select id="{{ key }}" name="{{ key }}">
+            <option value="No" {% if request.form.get(key)=='No' %}selected{% endif %}>No</option>
+            <option value="Yes" {% if request.form.get(key)=='Yes' %}selected{% endif %}>Yes</option>
+          </select>
+        </div>
+      {% endfor %}
+      <button type="submit" class="btn">Calculate Score</button>
+    </form>
+  </div>
+  {% if score is not none %}
+    <div class="card">
+      <h3>Compliance Score</h3>
+      <p>Your score is {{ score }} out of {{ max_score }} (<strong>{{ pct }}%</strong>).</p>
+      {% if recommendations %}
+        <h4>Recommendations</h4>
+        <ul>
+          {% for rec in recommendations %}
+            <li>{{ rec }}</li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p>Great! No immediate gaps detected in this quick check.</p>
+      {% endif %}
+      <h4 style="margin-top: 1rem;">Export Report</h4>
+      <form method="post" action="/export_compliance_pdf">
+        <input type="hidden" name="responses_data" value="{{ request.form | tojson | e }}" />
+        <input type="hidden" name="score" value="{{ score }}" />
+        <input type="hidden" name="max_score" value="{{ max_score }}" />
+        <input type="hidden" name="recommendations_data" value="{{ recommendations | tojson | e if recommendations else '[]' }}" />
+        <button type="submit" class="btn">📄 Export PDF</button>
+      </form>
+    </div>
+  {% endif %}
+{% endblock %}

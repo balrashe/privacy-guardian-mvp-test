@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+{#
+  RROSH Decision Wizard
+
+  This page guides users through the Real Risk of Significant Harm (RROSH)
+  decision process.  Users provide an incident description, select the
+  sensitivity of the data, indicate the probability of misuse, and describe
+  mitigation measures taken.  Upon submission the underlying module
+  determines whether the breach triggers notification/reporting under
+  Canadian law.  The resulting decision memo is displayed along with a
+  button to export the memo to PDF.  All elements follow the card‑based
+  layout and responsive styles defined in the global stylesheet.
+#}
+
+{% block content %}
+  {% set page_title = 'RROSH Decision Wizard' %}
+  <h2>RROSH Decision Wizard</h2>
+  <p>
+    Use this wizard to assess whether a privacy breach is likely to result
+    in a Real Risk of Significant Harm (RROSH).  Answer the questions
+    below to generate a decision memo and determine if notification
+    obligations apply.
+  </p>
+  <div class="card">
+    <form method="post">
+      <div class="form-group">
+        <label for="description">Brief description of the incident</label>
+        <textarea id="description" name="description" rows="3">{{ request.form.get('description', '') }}</textarea>
+      </div>
+      <div class="form-group">
+        <label for="sensitivity">Sensitivity of exposed data</label>
+        <select id="sensitivity" name="sensitivity">
+          {% for level in ['Low','Medium','High'] %}
+            <option value="{{ level }}" {% if request.form.get('sensitivity','Medium') == level %}selected{% endif %}>{{ level }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="probability">Probability of misuse or harm</label>
+        <select id="probability" name="probability">
+          {% for level in ['Low','Medium','High'] %}
+            <option value="{{ level }}" {% if request.form.get('probability','Medium') == level %}selected{% endif %}>{{ level }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="mitigation">Mitigation measures taken</label>
+        <textarea id="mitigation" name="mitigation" rows="2">{{ request.form.get('mitigation', '') }}</textarea>
+      </div>
+      <button type="submit" class="btn">Generate Decision</button>
+    </form>
+  </div>
+  {% if error %}
+    <div class="alert alert-error"><strong>Error:</strong> {{ error }}</div>
+  {% endif %}
+  {% if memo %}
+    <div class="card">
+      <h3>Decision Result</h3>
+      <p><strong>Decision:</strong> {{ memo.decision }}</p>
+      <p><strong>Recommendation:</strong> {{ memo.recommendation }}</p>
+      <p><strong>Rationale:</strong> {{ memo.rationale }}</p>
+      <p><a href="{{ memo.reference }}" target="_blank">Official OPC Guidance</a></p>
+      <!-- Export PDF form with memo data as JSON -->
+      <form method="post" action="/rrosh_export">
+        <input type="hidden" name="memo_data" value="{{ memo | tojson | e }}" />
+        <button type="submit" class="btn">📄 Export Decision as PDF</button>
+      </form>
+    </div>
+  {% endif %}
+{% endblock %}

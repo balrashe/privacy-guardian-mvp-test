@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  {% set page_title = 'Dashboard' %}
+  <h2>Welcome to Privacy Guardian</h2>
+  <p>
+    Your all‑in‑one privacy compliance assistant. Upload data to assess risk, generate customised
+    privacy policies, perform quick compliance checks, and more—all with a Canada‑first focus.
+  </p>
+
+  <!-- Overall progress -->
+  {% if progress_data and progress_data['overall'] %}
+  <div class="card">
+    <h3>Overall Progress</h3>
+    <div class="progress-bar-container">
+      <div class="progress-bar" style="width: {{ progress_data['overall'].percentage }}%"></div>
+    </div>
+    <p style="margin-top: 0.5rem; font-size: 0.9rem;">
+      Completed {{ progress_data['overall'].completed_count }} of {{ progress_data['overall'].total_count }} modules
+      ({{ '%.1f'|format(progress_data['overall'].percentage) }}%)
+    </p>
+  </div>
+  {% endif %}
+
+  <!-- Module cards grid -->
+  <div class="grid-3">
+    {% for key, data in progress_data.items() if key != 'overall' %}
+      {% set route_map = {
+        'risk_assessment': 'risk',
+        'policy_generator': 'policy',
+        'compliance_checklist': 'checklist',
+        'enhanced_risk_scoring': 'enhanced_risk',
+        'rrosh_decision': 'rrosh',
+        'breach_record_book': 'breach',
+        'dsar_factory': 'dsar',
+        'cross_border_assessment': 'cross_border',
+        'quebec_pack': 'quebec',
+        'processing_inventory': 'inventory'
+      } %}
+      <div class="card">
+        <h3>{{ data.name }}</h3>
+        <div class="progress-bar-container">
+          <div class="progress-bar" style="width: {{ data.percentage }}%"></div>
+        </div>
+        <p style="font-size: 0.85rem; margin-top: 0.5rem;">
+          {{ '%.0f'|format(data.percentage) }}% complete
+        </p>
+        <a class="btn" href="{{ url_for(route_map[key]) }}">
+          {% if data.percentage > 0 %}Resume{% else %}Start{% endif %}
+        </a>
+      </div>
+    {% endfor %}
+  </div>
+{% endblock %}

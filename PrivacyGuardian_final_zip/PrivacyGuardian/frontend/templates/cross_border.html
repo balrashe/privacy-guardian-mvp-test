@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{#
+  Cross‑Border Transfer Assessment
+
+  This page allows users to evaluate the risk associated with transferring
+  personal information outside Canada.  Users specify the destination
+  country or region, the categories of data being transferred, the
+  lawful basis for the transfer and any mitigation measures.  After
+  submission the module returns a risk level, a narrative describing
+  the assessment and a list of recommendations.  The form and results
+  are presented in cards consistent with the rest of the UI.
+#}
+
+{% block content %}
+  {% set page_title = 'Cross‑Border Transfer' %}
+  <h2>Cross‑Border Transfer Assessment</h2>
+  <p>
+    Evaluate the risk associated with transferring personal information
+    outside Canada and generate a short Transfer Impact Assessment (TIA)
+    narrative.  Provide details about the destination, data categories,
+    lawful basis and any safeguards in place.
+  </p>
+  <div class="card">
+    <h3>Assess Transfer</h3>
+    <form method="post">
+      <div class="form-group">
+        <label for="dest">Destination country or region</label>
+        <input type="text" id="dest" name="dest" value="{{ dest }}" required />
+      </div>
+      <div class="form-group">
+        <label for="categories">Data categories (comma‑separated)</label>
+        <input type="text" id="categories" name="categories" value="{{ categories | join(', ') if categories else '' }}" />
+      </div>
+      <div class="form-group">
+        <label for="lawful_basis">Lawful basis for transfer</label>
+        <select id="lawful_basis" name="lawful_basis">
+          {% for option in ['Consent', 'Contractual necessity', 'Legitimate interests', 'Legal obligation', 'Public interest', 'Vital interests'] %}
+            <option value="{{ option }}" {% if lawful_basis == option %}selected{% endif %}>{{ option }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="mitigation_measures">Mitigation measures</label>
+        <textarea id="mitigation_measures" name="mitigation_measures" rows="2">{{ mitigation_measures }}</textarea>
+      </div>
+      <button type="submit" class="btn">Assess Transfer</button>
+    </form>
+  </div>
+  {% if assessment %}
+    <div class="card">
+      <h3>Assessment Result</h3>
+      <p><strong>Risk level:</strong> {{ assessment['risk_level'] }}</p>
+      <p><strong>Narrative:</strong></p>
+      <p>{{ assessment['narrative'] | safe }}</p>
+      {% if assessment['recommendations'] %}
+        <h4 style="margin-top: 1rem;">Recommendations</h4>
+        <ul>
+          {% for rec in assessment['recommendations'] %}
+            <li>{{ rec }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    </div>
+  {% endif %}
+{% endblock %}

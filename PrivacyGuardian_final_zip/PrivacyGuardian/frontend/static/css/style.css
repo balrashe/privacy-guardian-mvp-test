@@ -1,0 +1,370 @@
+/*
+ * Privacy Guardian Custom Theme
+ *
+ * This stylesheet defines a modern, responsive layout with a dark sidebar
+ * and light main content area. The colour palette centres around
+ * calming blues and teals to evoke trust and professionalism. Cards
+ * and tables have soft shadows and rounded corners. The layout
+ * automatically adapts on smaller screens — the sidebar collapses
+ * behind a hamburger menu which can be toggled via JavaScript.
+ */
+
+:root {
+  /* Primary brand colours */
+  --color-primary: #2B6CB0; /* deep blue for accents */
+  --color-secondary: #319795; /* teal for progress and highlights */
+  --color-danger: #E53E3E; /* red for high risk */
+  --color-warning: #F6AD55; /* amber for medium risk */
+  --color-success: #38A169; /* green for low risk/success */
+
+  /* Neutral palette */
+  --color-bg: #F7FAFC; /* light background for main content */
+  --color-surface: #FFFFFF; /* card backgrounds */
+  --color-border: #E2E8F0; /* light borders */
+  --color-text: #2D3748; /* dark text */
+  --color-muted: #718096; /* muted text */
+  --color-sidebar-bg: #1F2937; /* dark sidebar background */
+  --color-sidebar-hover: rgba(255, 255, 255, 0.08); /* sidebar hover */
+  --color-sidebar-active: rgba(255, 255, 255, 0.15); /* sidebar active */
+}
+
+/* Global reset */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  line-height: 1.5;
+}
+
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* Sidebar */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 220px;
+  background-color: var(--color-sidebar-bg);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  z-index: 1000;
+  transition: transform 0.3s ease;
+}
+
+.sidebar .logo {
+  font-size: 1.4rem;
+  font-weight: 600;
+  padding: 1rem 1.25rem;
+  color: #ffffff;
+}
+
+.sidebar nav {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.sidebar nav a {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1.25rem;
+  color: #CBD5E0;
+  font-size: 0.95rem;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.sidebar nav a .icon {
+  margin-right: 0.75rem;
+  font-size: 1.1rem;
+}
+
+.sidebar nav a:hover {
+  background-color: var(--color-sidebar-hover);
+  color: #ffffff;
+}
+
+.sidebar nav a.active {
+  background-color: var(--color-sidebar-active);
+  color: #ffffff;
+}
+
+.sidebar .session-actions {
+  padding: 1rem 1.25rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sidebar .session-actions a {
+  display: block;
+  color: #CBD5E0;
+  padding: 0.5rem 0;
+  font-size: 0.9rem;
+}
+
+.sidebar .session-actions a:hover {
+  text-decoration: underline;
+  color: #FFFFFF;
+}
+
+/* Top bar */
+.topbar {
+  height: 56px;
+  margin-left: 220px;
+  background-color: var(--color-surface);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 220px;
+  z-index: 999;
+}
+
+#menu-button {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: var(--color-text);
+}
+
+.topbar h1 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+/* Main content */
+.main-content {
+  margin-left: 220px;
+  padding: 80px 1.5rem 2rem; /* space for fixed topbar */
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    transform: translateX(-100%);
+  }
+  body.sidebar-open .sidebar {
+    transform: translateX(0);
+  }
+  .topbar {
+    margin-left: 0;
+    left: 0;
+  }
+  .main-content {
+    margin-left: 0;
+    padding-top: 72px;
+  }
+  #menu-button {
+    display: inline;
+  }
+}
+
+/* Cards */
+.card {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 1.25rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  margin-bottom: 1.5rem;
+}
+
+.card h3 {
+  margin-top: 0;
+  margin-bottom: 0.75rem;
+  font-size: 1.1rem;
+}
+
+.card .btn {
+  margin-top: 1rem;
+}
+
+/* Buttons */
+.btn {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  background-color: var(--color-primary);
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  text-align: center;
+}
+
+.btn:hover {
+  background-color: #254b91;
+}
+
+.btn-secondary {
+  background-color: var(--color-secondary);
+}
+
+.btn-secondary:hover {
+  background-color: #277d78;
+}
+
+.btn-danger {
+  background-color: var(--color-danger);
+}
+
+.btn-danger:hover {
+  background-color: #c53030;
+}
+
+/* Form styles */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  margin-bottom: 0.25rem;
+  font-weight: 500;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  padding: 0.5rem;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  font-size: 0.95rem;
+  color: var(--color-text);
+  background-color: #fff;
+}
+
+.form-group textarea {
+  resize: vertical;
+}
+
+/* Tables */
+.table-container {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+
+th, td {
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--color-border);
+  text-align: left;
+  font-size: 0.9rem;
+}
+
+th {
+  background-color: var(--color-bg);
+  font-weight: 600;
+}
+
+tr:nth-child(even) {
+  background-color: #FDFDFD;
+}
+
+/* Alerts */
+.alert {
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  margin: 1rem 0;
+}
+.alert-error {
+  background-color: #FEE2E2;
+  color: #C53030;
+}
+.alert-warning {
+  background-color: #FEF3C7;
+  color: #B7791F;
+}
+.alert-success {
+  background-color: #E6FFFA;
+  color: #2C7A7B;
+}
+
+/* Progress indicators */
+.progress-bar-container {
+  background-color: var(--color-bg);
+  border-radius: 4px;
+  overflow: hidden;
+  height: 8px;
+  width: 100%;
+}
+
+.progress-bar {
+  height: 100%;
+  background-color: var(--color-primary);
+  transition: width 0.3s ease;
+}
+
+/* Risk tags */
+.chip {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.8rem;
+  border-radius: 12px;
+  color: #fff;
+}
+.chip-high {
+  background-color: var(--color-danger);
+}
+.chip-medium {
+  background-color: var(--color-warning);
+}
+.chip-low {
+  background-color: var(--color-success);
+}
+
+/* Layout utilities */
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.flex-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Mobile adjustments for grids */
+@media (max-width: 768px) {
+  .form-grid, .grid-2, .grid-3 {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,56 @@
+{% set current_path = request.path %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ page_title if page_title is defined else 'Privacy Guardian' }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+  </head>
+  <body>
+    <!-- Sidebar navigation -->
+    <aside class="sidebar">
+      <div class="logo">🛡️ Privacy Guardian</div>
+      <nav>
+        <a href="{{ url_for('home') }}" class="{% if current_path == '/' %}active{% endif %}"><span class="icon">🏠</span>Home</a>
+        <a href="{{ url_for('risk') }}" class="{% if current_path.startswith('/risk') %}active{% endif %}"><span class="icon">🔍</span>Risk Assessment</a>
+        <a href="{{ url_for('enhanced_risk') }}" class="{% if current_path.startswith('/enhanced_risk') %}active{% endif %}"><span class="icon">📈</span>Enhanced Risk</a>
+        <a href="{{ url_for('policy') }}" class="{% if current_path.startswith('/policy') %}active{% endif %}"><span class="icon">📄</span>Policy Generator</a>
+        <a href="{{ url_for('checklist') }}" class="{% if current_path.startswith('/checklist') %}active{% endif %}"><span class="icon">✅</span>Checklist</a>
+        <a href="{{ url_for('rrosh') }}" class="{% if current_path.startswith('/rrosh') %}active{% endif %}"><span class="icon">⚖️</span>RROSH Decision</a>
+        <a href="{{ url_for('breach') }}" class="{% if current_path.startswith('/breach') %}active{% endif %}"><span class="icon">🚨</span>Breach Record</a>
+        <a href="{{ url_for('dsar') }}" class="{% if current_path.startswith('/dsar') %}active{% endif %}"><span class="icon">📁</span>DSAR Dossier</a>
+        <a href="{{ url_for('cross_border') }}" class="{% if current_path.startswith('/cross_border') %}active{% endif %}"><span class="icon">🌐</span>Cross‑Border</a>
+        <a href="{{ url_for('quebec') }}" class="{% if current_path.startswith('/quebec') %}active{% endif %}"><span class="icon">🇨🇦</span>Law 25 Pack</a>
+        <a href="{{ url_for('inventory') }}" class="{% if current_path.startswith('/inventory') %}active{% endif %}"><span class="icon">📦</span>Processing Inventory</a>
+      </nav>
+      <div class="session-actions">
+        <a href="{{ url_for('export_session') }}">📤 Export Session</a>
+        <a href="{{ url_for('clear_session') }}">🗑️ Clear Session</a>
+      </div>
+    </aside>
+    <!-- Top bar -->
+    <header class="topbar">
+      <button id="menu-button" onclick="document.body.classList.toggle('sidebar-open')">☰</button>
+      <h1>{{ page_title if page_title is defined else 'Privacy Guardian' }}</h1>
+      <div></div>
+    </header>
+    <!-- Main content area -->
+    <main class="main-content">
+      {% block content %}{% endblock %}
+    </main>
+    <!-- Toggle script -->
+    <script>
+      // Close sidebar when clicking outside (mobile)
+      document.addEventListener('click', function(event) {
+        var sidebar = document.querySelector('.sidebar');
+        var button = document.getElementById('menu-button');
+        if (window.innerWidth <= 768) {
+          if (!sidebar.contains(event.target) && !button.contains(event.target)) {
+            document.body.classList.remove('sidebar-open');
+          }
+        }
+      });
+    </script>
+  </body>
+</html>

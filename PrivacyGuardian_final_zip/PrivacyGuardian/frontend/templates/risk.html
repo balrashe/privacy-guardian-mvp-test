@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  {% set page_title = 'Data Risk Assessment' %}
+  <h2>Data Risk Assessment</h2>
+  <p>Upload a CSV file of customer or operational data and we'll classify each column by sensitivity (High, Medium, Low). You can also analyse our sample dataset to see how it works.</p>
+  <div class="card">
+    <form method="post" enctype="multipart/form-data">
+      <div class="form-group">
+        <label for="csv_file">Upload CSV</label>
+        <input type="file" id="csv_file" name="csv_file" accept=".csv" />
+      </div>
+      <div class="form-group">
+        <label><input type="checkbox" name="use_sample" {% if request.form.get('use_sample') %}checked{% endif %}/> Use sample dataset</label>
+      </div>
+      <div class="form-group">
+        <label for="classification_method">Classification Method</label>
+        <select id="classification_method" name="classification_method">
+          <option value="hybrid" {% if request.form.get('classification_method')=='hybrid' %}selected{% endif %}>Hybrid (ML + Rules)</option>
+          <option value="rules" {% if request.form.get('classification_method')=='rules' %}selected{% endif %}>Rule‑based Only</option>
+        </select>
+      </div>
+      <button type="submit" class="btn">Assess Risk</button>
+    </form>
+    {% if error %}
+      <div class="alert alert-error">
+        <strong>Error:</strong> {{ error }}
+        {% if validation_messages %}<pre style="white-space: pre-wrap; margin-top: 0.5rem;">{{ validation_messages }}</pre>{% endif %}
+      </div>
+    {% endif %}
+  </div>
+  {% if table_html %}
+    <div class="card">
+      <h3>Classification Results</h3>
+      <div class="table-container">
+        {{ table_html | safe }}
+      </div>
+      <h3>Risk Summary</h3>
+      <img src="data:image/png;base64,{{ chart_data }}" alt="Risk summary bar chart" style="max-width: 100%; height: auto; margin-top: 0.5rem;" />
+      {% if show_exports %}
+        <h4 style="margin-top: 1rem;">Export Reports</h4>
+        <div class="grid-2">
+          <form method="post" action="/export_risk_pdf">
+            <input type="hidden" name="results_data" value="{{ results | tojson | e }}" />
+            <input type="hidden" name="summary_data" value="{{ summary | tojson | e }}" />
+            <input type="hidden" name="dataset_name" value="{{ dataset_name }}" />
+            <input type="hidden" name="df_rows" value="{{ df_rows }}" />
+            <input type="hidden" name="classification_method" value="{{ classification_method }}" />
+            <button type="submit" class="btn" style="width: 100%;">📄 Export PDF</button>
+          </form>
+          <form method="post" action="/export_risk_excel">
+            <input type="hidden" name="results_data" value="{{ results | tojson | e }}" />
+            <input type="hidden" name="summary_data" value="{{ summary | tojson | e }}" />
+            <input type="hidden" name="dataset_name" value="{{ dataset_name }}" />
+            <input type="hidden" name="df_rows" value="{{ df_rows }}" />
+            <input type="hidden" name="classification_method" value="{{ classification_method }}" />
+            <button type="submit" class="btn btn-secondary" style="width: 100%;">📊 Export Excel</button>
+          </form>
+        </div>
+      {% endif %}
+    </div>
+  {% endif %}
+{% endblock %}

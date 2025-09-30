@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{#
+  Breach Record Book
+
+  This page provides a simple interface for maintaining an internal log of
+  privacy breaches for 24 months as required under Canadian privacy law.
+  Users can add new breach records, view the existing log and export
+  reports.  Records are stored in the session only and never persisted
+  externally.
+#}
+
+{% block content %}
+  {% set page_title = 'Breach Record Book' %}
+  <h2>Breach Record Book</h2>
+  <p>
+    Maintain an internal log of all privacy breaches for 24&nbsp;months.  Add
+    records below and export the log when needed.  Records are stored only
+    in your current session.
+  </p>
+  {% if error %}
+    <div class="alert alert-error"><strong>Error:</strong> {{ error }}</div>
+  {% endif %}
+  <div class="card">
+    <h3>Add Breach Record</h3>
+    <form method="post">
+      <div class="grid-2">
+        <div class="form-group">
+          <label for="breach_date">Date of breach</label>
+          <input type="date" id="breach_date" name="breach_date" required />
+        </div>
+        <div class="form-group">
+          <label for="reported"><input type="checkbox" id="reported" name="reported" /> Reported to regulator (OPC)?</label>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="description">Description of incident</label>
+        <textarea id="description" name="description" rows="2"></textarea>
+      </div>
+      <div class="form-group">
+        <label for="containment">Containment measures</label>
+        <textarea id="containment" name="containment" rows="2"></textarea>
+      </div>
+      <div class="form-group">
+        <label for="harm">Actual or potential harm</label>
+        <textarea id="harm" name="harm" rows="2"></textarea>
+      </div>
+      <button type="submit" class="btn">Add Record</button>
+    </form>
+  </div>
+  <div class="card">
+    <h3>Existing Records</h3>
+    {% if records is not none and not records.empty %}
+      <div class="table-container">
+        {{ records.to_html(classes='table table-striped', index=False, border=0) | safe }}
+      </div>
+      <h4 style="margin-top: 1rem;">Export Log</h4>
+      <div class="grid-2">
+        <form method="post" action="/breach_export_pdf">
+          <button type="submit" class="btn" style="width: 100%;">📄 Export PDF</button>
+        </form>
+        <form method="post" action="/breach_export_excel">
+          <button type="submit" class="btn btn-secondary" style="width: 100%;">📊 Export Excel</button>
+        </form>
+      </div>
+    {% else %}
+      <p>No breach records yet.</p>
+    {% endif %}
+  </div>
+{% endblock %}
